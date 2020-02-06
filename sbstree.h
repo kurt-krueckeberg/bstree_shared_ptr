@@ -2,10 +2,13 @@ template<typenameT> class sbtree {
 
     struct Node{
         T key;
-        Node* left;
+        Node* left; // std::shared_ptr<Node> left??
         Node* right;
         Node();
-        Node(T);
+        Node(const T& x) // left
+        {
+          key = x;
+        } 
         // parent?  
     };
 
@@ -14,6 +17,7 @@ template<typenameT> class sbtree {
    bool sbtree<T>::insert(const T& x, std::shared_ptr<Node>& p);
  
    std::shared_ptr<Node> root; // shared_ptr seemss better than 'Node *root', which the article had.
+   std::size_t size;
 
  public:
 
@@ -30,11 +34,6 @@ template<typenameT> class sbtree {
     sbtree& operator=(const sbtree& lhs);
 
     sbtree& operator=(sbtree&& lhs);
-
-    bool insert(const T&)
-    {
-      return  insert(x, root);
-    };
 
     bool remove(const T& x)
     {
@@ -54,14 +53,41 @@ template<typenameT> class sbtree {
     Node* find(const T&);
 };
 
-
-template<typename T> bool sbtree<T>::insert(const T& x, std::shared_ptr<Node>& p) 
+template<typename T> bool sbtree<T>::insert(const T&)
 {
+  if (!root) {
+     root = std::make_shared<Node>(x);     
+     return true;
+  } 
+  else
+     insert(x, root);
+};
 
+template<typename T> bool sbtree<T>::insert(const T& x, std::shared_ptr<Node>& current) 
+{
+    if (x < current->key) {
 
+         if (!current->left) {
+              current->left =  std::make_shared<Node>(...);
+         else 
+             insert(x, current->left);
+     
+     } else if (x > current->key) {
+ 
+          if (!current->right) { 
+              current->right = std::make_shared<Node>(...);
+          }
+          else
+              insert(x, current->right);
+
+     } else if (x == current->key) 
+           return false; 
+     
+     return true;
 }
+
 /*
- * Returns true if found and removed, false if nt found
+ * Returns true if found and removed, false if not found
  */
 template<typename T> bool sbtree<T>::remove(const T& x, std::shared_ptr<Node>& p) 
 {
