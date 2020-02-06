@@ -9,6 +9,7 @@ template<typename T> class sbtree {
 
     struct Node{
         T key;
+        Node *parent;
 
        // Node* left; // std::shared_ptr<Node> left??
         //Node* right;
@@ -18,10 +19,9 @@ template<typename T> class sbtree {
 
         Node();
 
-        Node(const T& x): key{x} 
+        Node(const T& x, Node *parent_in = nullptr): key{x}, parent{parent_in} 
         {
         } 
-        // parent?  
     };
 
    bool remove(const T& x, std::shared_ptr<Node>& p); 
@@ -105,14 +105,14 @@ template<typename T> bool sbtree<T>::insert(const T& x, std::shared_ptr<Node>& c
     if (x < current->key) {
 
          if (!current->left) 
-              current->left =  std::make_shared<Node>(x);
+              current->left =  std::make_shared<Node>(x, current.get());
          else 
              insert(x, current->left);
      
      } else if (x > current->key) {
  
           if (!current->right) { 
-              current->right = std::make_shared<Node>(x);
+              current->right = std::make_shared<Node>(x, current.get());
           }
           else
               insert(x, current->right);
