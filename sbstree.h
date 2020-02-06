@@ -6,6 +6,7 @@ template<typenameT> class sbtree {
         Node* right;
         Node();
         Node(T);
+        // parent?  
     };
 
    bool sbtree<T>::remove(const T& x, std::shared_ptr<Node>& p); 
@@ -56,6 +57,7 @@ template<typenameT> class sbtree {
 
 template<typename T> bool sbtree<T>::insert(const T& x, std::shared_ptr<Node>& p) 
 {
+
 
 }
 /*
