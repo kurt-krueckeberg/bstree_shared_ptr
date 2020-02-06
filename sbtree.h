@@ -1,20 +1,34 @@
-template<typenameT> class sbtree {
+#ifndef sbtree_h
+#define sbtree_h
+#include <memory>
+#include <utility>
+#include <iostream>
+#include <initializer_list>
+
+template<typename T> class sbtree {
 
     struct Node{
         T key;
-        Node* left; // std::shared_ptr<Node> left??
-        Node* right;
+
+       // Node* left; // std::shared_ptr<Node> left??
+        //Node* right;
+
+        std::shared_ptr<Node> left; // std::shared_ptr<Node> left??
+        std::shared_ptr<Node> right;
+
         Node();
-        Node(const T& x) // left
+
+        Node(const T& x): key{x} 
         {
-          key = x;
         } 
         // parent?  
     };
 
-   bool sbtree<T>::remove(const T& x, std::shared_ptr<Node>& p); 
+   bool remove(const T& x, std::shared_ptr<Node>& p); 
 
-   bool sbtree<T>::insert(const T& x, std::shared_ptr<Node>& p);
+   bool insert(const T& x, std::shared_ptr<Node>& p) noexcept;
+   
+   template<typename Functor> void inorder(Functor f, const std::shared_ptr<Node>& current) const noexcept; 
  
    std::shared_ptr<Node> root; // shared_ptr seemss better than 'Node *root', which the article had.
    std::size_t size;
@@ -28,54 +42,77 @@ template<typenameT> class sbtree {
    ~sbtree() = default;
 
     sbtree(const sbtree&);
+    sbtree(const std::initializer_list<T>& list) noexcept
+    {
+        for (const auto& x : list)
+            insert(x);
+    }
 
     sbtree(sbtree&&);
 
     sbtree& operator=(const sbtree& lhs);
 
     sbtree& operator=(sbtree&& lhs);
-
+    
+    bool insert(const T& x) noexcept;
+    
     bool remove(const T& x)
     {
       return remove(x, root); 
     }
 
-    template<typename Functor> inorder(Functor f); 
+    template<typename Functor> void inorder(Functor f) const noexcept
+    {
+        return inorder(f, root);
+    }
+    
+    template<typename Functor> void preorder(Functor f) const noexcept; 
 
-    template<typename Functor> preorder(Functor f);
+    template<typename Functor> void postorder(Functor f) const noexcept; 
 
-    template<typename Functor> postorder(Functor f);
-
-    void breath_first(void(*)(pNode&));
+    //void breath_first();
 
     size_t height();
 
     Node* find(const T&);
+    
+    std::ostream& print(std::ostream& ostr) const noexcept
+    {
+        this->inorder([](const auto& x) { std::cout << x << ", " << std::flush; });
+        
+        std::cout << std::endl;
+        return ostr;
+    }
+    
+    friend std::ostream& operator<<(std::ostream& ostr, const sbtree& tree)
+    {
+        return tree.print(ostr);
+    }
 };
 
-template<typename T> bool sbtree<T>::insert(const T&)
+template<typename T> bool sbtree<T>::insert(const T& x) noexcept
 {
   if (!root) {
      root = std::make_shared<Node>(x);     
      return true;
   } 
   else
-     insert(x, root);
+     return insert(x, root);
 };
 
-template<typename T> bool sbtree<T>::insert(const T& x, std::shared_ptr<Node>& current) 
+template<typename T> bool sbtree<T>::insert(const T& x, std::shared_ptr<Node>& current) noexcept
 {
     if (x < current->key) {
 
-         if (!current->left) {
-              current->left =  std::make_shared<Node>(...);
+         if (!current->left) 
+              current->left =  std::make_shared<Node>(x);
          else 
              insert(x, current->left);
      
      } else if (x > current->key) {
  
           if (!current->right) { 
-              current->right = std::make_shared<Node>(...);
+              current->right = std::make_shared<Node>(x);
           }
           else
               insert(x, current->right);
@@ -136,3 +173,19 @@ template<typename T> bool sbtree<T>::remove(const T& x, std::shared_ptr<Node>& p
 
    return false;
 }
+
+template<typename T>
+template<typename Functor> void sbtree<T>::inorder(Functor f, const std::shared_ptr<Node>& current) const noexcept 
+{
+   if (current == nullptr) {
+
+      return;
+   }
+
+   inorder(f, current->left);
+
+   f(current->key); 
+
+   inorder(f, current->right);
+}
+#endif
