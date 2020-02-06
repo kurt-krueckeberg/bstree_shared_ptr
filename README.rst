@@ -1,10 +1,25 @@
 shared_ptr Implementation of Binary Search Tree
 -----------------------------------------------
 
-Some recursive binary search tree algorithms cannot easily be implemented when the Node class contains ``unique_ptr`` for ``left`` and ``right``. In the sbtree class below the **remove** method is an example of this.
+Some recursive binary search tree algorithms cannot easily be implemented when the nest Node class uses ``unique_ptr`` for ``left`` and ``right``:
 
 .. code-block:: cpp
 
+    template<typename T> class sbtree {
+        struct Node{
+            T key;
+            Node *parent;
+            std::shared_ptr<Node> left; 
+            std::shared_ptr<Node> right;
+            Node();
+            //..snip
+        };
+        
+In the sbtree class below, in which Node uses ``shared_ptr`` instead, the **remove** method can be implemented recursively using ``std::shared_ptr<Node>&``:
+
+.. code-block:: cpp
+
+    // Basics of sbtree
     template<typename T> class sbtree {
     
         struct Node{
@@ -30,15 +45,9 @@ Some recursive binary search tree algorithms cannot easily be implemented when t
        // ...snip
     
      public:
-    
-        sbtree() : root{nullptr}
-        {
-        } 
-    
+        sbtree() : root{nullptr} {} 
        ~sbtree() = default;
-    
         sbtree(const sbtree& lhs);
-    
         sbtree(const std::initializer_list<T>& list) noexcept;
         
         sbtree& operator=(const sbtree& lhs);
