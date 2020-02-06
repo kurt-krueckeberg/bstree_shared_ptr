@@ -158,7 +158,7 @@ template<typename T> bool sbtree<T>::remove(const T& x, std::shared_ptr<Node>& p
 
        else { // p is an internal node with two children. 
 
-         std::shared_ptr<Node> q = p->left;
+         std::shared_ptr<Node> q = p->left; // Note: This line not possible with unique_ptr
 
          while (q->right != nullptr) // locate in-order predecessor
                 q = q->right;
