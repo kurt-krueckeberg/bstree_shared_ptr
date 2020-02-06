@@ -1,34 +1,44 @@
-template<typenameT> class sbstree {
+template<typenameT> class sbtree {
 
-    struct Node{T key;
+    struct Node{
+        T key;
         Node* left;
         Node* right;
         Node();
         Node(T);
     };
 
+   bool sbtree<T>::remove(const T& x, std::shared_ptr<Node>& p); 
 
-   Node *root; // shared_ptr is better--right?
+   bool sbtree<T>::insert(const T& x, std::shared_ptr<Node>& p);
+ 
+   std::shared_ptr<Node> root; // shared_ptr seemss better than 'Node *root', which the article had.
 
  public:
 
-    sbstree() : root{nullptr}
+    sbtree() : root{nullptr}
     {
     } 
 
-    ~bstree() = default;
+   ~sbtree() = default;
 
-    sbstree(const sbstree&);
+    sbtree(const sbtree&);
 
-    sbstree(sbstree&&);
+    sbtree(sbtree&&);
 
-    sbstree& operator=(const sbstree& lhs);
+    sbtree& operator=(const sbtree& lhs);
 
-    sbstree& operator=(sbstree&& lhs);
+    sbtree& operator=(sbtree&& lhs);
 
-    bool insert(const T&);
+    bool insert(const T&)
+    {
+      return  insert(x, root);
+    };
 
-    bool remove(const T&);
+    bool remove(const T& x)
+    {
+      return remove(x, root); 
+    }
 
     template<typename Functor> inorder(Functor f); 
 
@@ -42,10 +52,16 @@ template<typenameT> class sbstree {
 
     Node* find(const T&);
 };
+
+
+template<typename T> bool sbtree<T>::insert(const T& x, std::shared_ptr<Node>& p) 
+{
+
+}
 /*
  * Returns true if found and removed, false if nt found
  */
-template<typename T> bool sbstree<T>::remove(const T& x, std::shared_ptr<Node>& p) 
+template<typename T> bool sbtree<T>::remove(const T& x, std::shared_ptr<Node>& p) 
 {
    // If p is not nullptr and... 
    // ...if its key is less than current node and we still have nodes to search 
