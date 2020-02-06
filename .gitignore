@@ -1,2 +1,12 @@
-/build/
-/dist/
+.cproject
+.project
+.settings
+Debug/
+Release/
+build/
+dist/
+nbproject/
+Makefile
+.dep.inc
+x*
+.*x*
