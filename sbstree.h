@@ -156,9 +156,9 @@ template<typename T> class sbstree {
     
     bool remove(const T& x)
     {
-      bool bRc = remove(x, root); 
-      if (bRc) --size;
-      return bRc; 
+      bool rc = remove(x, root); 
+      if (rc) --size;
+      return rc; 
     }
 
     template<typename Functor> void in_order(Functor f) const noexcept
