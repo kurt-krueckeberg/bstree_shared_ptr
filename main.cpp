@@ -1,4 +1,4 @@
-#include "sbtree.h"
+#include "sbstree.h"
 #include <iostream>
 using namespace std;
 
@@ -6,7 +6,7 @@ int main(int argc, char** argv)
 {
   initializer_list<int> lst{50, 39, 15, 65, 69, 150, 125, 20, 70, 100, 40, 34, 37, 30, 10, 33, 36, 38, 85, 90, 60, 35, 80, 89};  
   
-  sbtree<int> tree{lst};
+  sbstree<int> tree{lst};
 
   cout << tree;
 
@@ -15,6 +15,8 @@ int main(int argc, char** argv)
       tree.remove(x);
       cout << "Tree after removing " << x << '\n';
       cout << tree;  
+      cout << "\nPrinting tree level-order\n";
+      tree.printlevelOrder(cout);
   }
 
   return 0;
