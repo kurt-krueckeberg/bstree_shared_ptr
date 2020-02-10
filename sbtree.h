@@ -29,7 +29,7 @@ template<typename T> class sbtree {
 
    void move(sbtree&& lhs) noexcept
    {
-       root = std::move(lhs.root)
+       root = std::move(lhs.root);
        size = lhs.size;
        lhs.size = 0;
    }
@@ -70,6 +70,7 @@ template<typename T> class sbtree {
     {
       bool bRc = remove(x, root); 
       if (bRc) --size;
+      return bRc; 
     }
 
     template<typename Functor> void inorder(Functor f) const noexcept
@@ -106,7 +107,7 @@ template<typename T> sbtree<T>::sbtree(const sbtree& lhs)
 {
    // This will invoke Node(const Node&), passing *lhs.root, which will duplicate the entire tree rooted at lhs.root.
    root = std::make_unique<Node>(*lhs.root); 
-   size_ = lhs.size_;
+   size = lhs.size;
 }
 
 template<typename T> bool sbtree<T>::insert(const T& x) noexcept
@@ -151,29 +152,28 @@ template<typename T> bool sbtree<T>::insert(const T& x, std::shared_ptr<Node>& c
 
 bool sbtree<T>::remove(const T& x, std::shared_ptr<Node>& p) 
 {
-
    // If p is not nullptr and... 
    // ...if its key is less than current node and we still have nodes to search 
-   if (!p && x < p->key) 
+   if (p && x < p->key) 
       return remove(x, p->left);
 
    // ...else if its key is greater than current node and we still have nodes to search  
-   else if (!p && x > p->key)
+   else if (p && x > p->key)
       return remove(x, p->right);
 
    // ...else we found the key
-   else if (!p && p->key == x) { 
+   else if (p && p->key == x) { 
 
        // 1. If p has only one child (that is not nullptr), then we can remove node p immediately by...
 
        // ...If p doesn't have a left child, then...
-       if (p->left == nullptr) 
+       if (!p->left) 
 
            // ...remove p by replacing it with right child
            p = p->right; 
 
-       // ...esle If p doesn't have a right child, then...
-       else if (p->right == nullptr) 
+       // ...else If p doesn't have a right child, then...
+       else if (!p->right) 
 
             // ...remove p by replacing it with left child
             p = p->left; 
@@ -201,25 +201,25 @@ template<typename T> bool sbtree<T>::remove(const T& x, std::shared_ptr<Node>& p
 {
    // If p is not nullptr and... 
    // ...if its key is less than current node and we still have nodes to search 
-   if (!p && x < p->key) 
+   if (p && x < p->key) 
       return remove(x, p->left);
 
    // ...else if its key is greater than current node and we still have nodes to search  
-   else if (!p && x > p->key)
+   else if (p && x > p->key)
       return remove(x, p->right);
 
    // ...else we found the key
-   else if (!p && p->key == x) { 
+   else if (p && p->key == x) { 
 
        // 1. If p has only one child (that is not nullptr), then we can remove node p immediately by...
 
-       if (p->left == nullptr) 
+       if (!p->left) 
 
            // ...remove p by replacing it with right child
            p = p->right; 
 
        // ...else if p doesn't have a right child, then...
-       else if (p->right == nullptr) 
+       else if (!p->right) 
 
             // ...remove p by replacing it with left child
             p = p->left; 
