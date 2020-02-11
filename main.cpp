@@ -17,6 +17,7 @@ int main(int argc, char** argv)
       cout << tree;  
       cout << "\nPrinting tree level-order\n";
       tree.printlevelOrder(cout);
+      tree.debug_printlevelOrder(cout);
   }
 
   return 0;

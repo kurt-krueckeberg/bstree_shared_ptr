@@ -42,8 +42,20 @@ template<typename T> class sbstree {
         
         friend std::ostream& operator<<(std::ostream& ostr, const Node& node) 
         {
-            return ostr << node.key;
+            return node.print(ostr);
         }
+
+        std::ostream& print(std::ostream& ostr) const noexcept
+        {
+            return ostr << key << ", " << std::flush;
+        }
+        
+        bool isLeaf() const noexcept
+        {
+           return (!left && !right) ? true : false;
+        }
+
+        std::ostream& debug_print(std::ostream& ostr) const noexcept;
     };
 
    bool remove(const T& x, std::shared_ptr<Node>& p); 
@@ -65,52 +77,51 @@ template<typename T> class sbstree {
    std::size_t size;
 
    class NodeLevelOrderPrinter {
- 
-       std::ostream& ostr;
-       int current_level;
-       int height;
- 
-       void display_level(std::ostream& ostr, int level) const noexcept
-       {
-         ostr << "\n\n" << "current level = " <<  level << ' '; 
-            
-         // Provide some basic spacing to tree appearance.
-         std::size_t num = height - level + 1;
-         
-         std::string str( num, ' ');
-         
-         ostr << str; 
-       }
- 
-       std::ostream& (Node::*pmf)(std::ostream&) const noexcept;
- 
-      public: 
+   
+      std::ostream& ostr;
+      int current_level;
+      int height;
+       
 
-        NodeLevelOrderPrinter (int hght, std::ostream& ostr_in): height{hght}, ostr{ostr_in}, current_level{0} 
-        {
-        }
-                                                                                                                                                                                        
-        NodeLevelOrderPrinter (const NodeLevelOrderPrinter& lhs): height{lhs.height}, ostr{lhs.ostr}, current_level{lhs.current_level}
-        {
-        }                                       
+      std::ostream& (Node::*pmf)(std::ostream&) const noexcept;
+
+      void display_level(std::ostream& ostr, int level) const noexcept
+      {
+        ostr << "\n\n" << "current level = " <<  level << '\n'; 
+         
+        // Provide some basic spacing to tree appearance.
+        /*
+        std::size_t num = height - level + 1;
       
-        void operator ()(const Node *pnode, int level)
-        { 
-           // Did current_level change?
-           if (current_level != level) { 
-          
-               current_level = level;
-          
-               display_level(ostr, level);       
-           }
-     
-           ostr << *pnode;  
-     
-           std::cout << ' ' << std::flush;
-        }
-    }; // end NodeLevelOrderPrinter
+        std::string str( num, ' ');
+      
+        ostr << str; 
+         */ 
+      }
+      
+      public: 
+      
+      NodeLevelOrderPrinter (int height_in,  std::ostream& (Node::*pmf_)(std::ostream&) const noexcept, std::ostream& ostr_in):  ostr{ostr_in}, current_level{0}, height{height_in}, pmf{pmf_} {}
+
+      NodeLevelOrderPrinter (const NodeLevelOrderPrinter& lhs): ostr{lhs.ostr}, current_level{lhs.current_level}, height{lhs.height}, pmf{lhs.pmf} {}
+      
+      void operator ()(const Node *pnode, int level)
+      { 
+          // Did current_level change?
+          if (current_level != level) { 
+         
+              current_level = level;
+         
+              display_level(ostr, level);       
+          }
+         
+          (pnode->*pmf)(std::cout);
+         
+          std::cout << '\n' << std::flush;
+      }
+   };
  
-    std::size_t height(const std::shared_ptr<Node>& node) const noexcept;
+   std::size_t height(const std::shared_ptr<Node>& node) const noexcept;
  
   public:
 
@@ -138,6 +149,8 @@ template<typename T> class sbstree {
     sbstree& operator=(sbstree&& lhs);
 
     void printlevelOrder(std::ostream& ostr) const noexcept;
+
+    void debug_printlevelOrder(std::ostream& ostr) const noexcept;
     
     bool empty() const noexcept
     {
@@ -432,34 +445,25 @@ template<typename T> inline void  sbstree<T>::printlevelOrder(std::ostream& ostr
 {
   auto h = height();  
   
-  NodeLevelOrderPrinter tree_printer(h, ostr);  
+  NodeLevelOrderPrinter tree_printer(h, &Node::print, ostr);  
   
   breath_first(tree_printer);
   
   std::cout << std::endl;
 }
 
+template<typename T> void sbstree<T>::debug_printlevelOrder(std::ostream& ostr) const noexcept
+{
+  NodeLevelOrderPrinter tree_printer(height(), &Node::debug_print, ostr);  
+  
+  breath_first(tree_printer);
+  
+  ostr << std::flush;
+}
+
 template<typename T> std::size_t sbstree<T>::height(const std::shared_ptr<Node>& current) const noexcept
 {
-/*
-   if (!node)  
-      return 0;  
-
-  else {  
-
-      // compute the height of each subtree 
-      int lheight = height(node->left.get());  
-
-      int rheight = height(node->right.get());  
-
-      // Use the larger height
-      if (lheight > rheight)  
-          return(lheight + 1);  
-      else
-         return(rheight + 1);  
-  }  
-  */
-//From: algorithmsandme.com/level-order-traversal-of-binary-tree
+  // From: algorithmsandme.com/level-order-traversal-of-binary-tree
   if (!current) return 0;
  
   int lh = height(current->left);
