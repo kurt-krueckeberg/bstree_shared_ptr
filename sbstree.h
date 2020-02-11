@@ -213,6 +213,34 @@ template<typename T> class sbstree {
     }
 };
 
+template<class T> std::ostream& sbstree<T>::Node::debug_print(std::ostream& ostr) const noexcept
+{
+   ostr << " {["; 
+ 
+   ostr << key;
+ 
+   ostr << "]:parent=" << parent << ", this=" << this;
+ 
+   ostr << ", left=";
+   
+   if (!left) 
+     ostr << "nullptr";
+   else
+      ostr << left.get();
+   
+   ostr << ", right=";
+   
+   if (!right) 
+     ostr << "nullptr";
+   else
+      ostr << right.get();
+   
+   ostr << "}";
+ 
+   return ostr;
+}
+
+
 template<typename T> sbstree<T>::Node::Node(const typename sbstree<T>::Node& lhs) noexcept : key{lhs.key}, left{nullptr}, right{nullptr}
 {
    if (lhs.parent == nullptr) // If we are copying a root pointer, then set parent.
