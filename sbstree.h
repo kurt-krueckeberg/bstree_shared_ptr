@@ -221,20 +221,21 @@ template<class T> std::ostream& sbstree<T>::Node::debug_print(std::ostream& ostr
  
    //--ostr << key << "]: this=" << this;
    ostr << key << ']';
- 
-   ostr << ", left=";
-   
-   if (!left) 
-     ostr << "nullptr";
+
+   if (parent) 
+      ostr << ", parent->key =" << parent->key; 
    else
-      ostr << left.get();
-   
-   ostr << ", right=";
+      ostr << ", parent = nullptr";
+ 
+   if (!left) 
+     ostr << ", left = nullptr";
+   else
+      ostr << ", left->key = " <<  left->key;
    
    if (!right) 
-     ostr << "nullptr";
+     ostr << ", right = nullptr";
    else
-      ostr << right.get();
+      ostr << ", right->key = " << right->key;
    
    ostr << "}";
  
