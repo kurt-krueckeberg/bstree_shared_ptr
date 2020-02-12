@@ -413,14 +413,14 @@ template<typename T> bool sbstree<T>::remove(const T& x, std::shared_ptr<Node>& 
 
        else { 
 
-         std::shared_ptr<Node> q = p->left; // Note: This line not possible with unique_ptr
+         std::shared_ptr<Node> q = p->right; // Note: This line not possible with unique_ptr
 
-         while (q->right != nullptr) // locate in-order predecessor leaf node.
-                q = q->right;
+         while (q->left != nullptr) // locate in-order successor leaf node.
+                q = q->left;
 
-          p->key = q->key; // Set in-rder predecessor as p's key and...
+          p->key = q->key; // Set in-order successor p's key and...
 
-          remove(q->key, p->left); // ...now delete the swapped key, x. Start searching for x at p->left,
+          remove(q->key, p->right); // ...now delete the swapped key, x. Start searching for x at p->left,
                                    // the root node of the in-order predessor.  
        }
        return true;
