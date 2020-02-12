@@ -416,7 +416,7 @@ template<typename T> bool sbstree<T>::remove(const T& x, std::shared_ptr<Node>& 
          while (q->right != nullptr) // locate in-order predecessor leaf node.
                 q = q->right;
 
-          p->key = q->key; // Swap leaf node key with p's key and...
+          p->key = q->key; // Set in-rder predecessor as p's key and...
 
           remove(q->key, p->left); // ...now delete the swapped key, x. Start searching for x at p->left,
                                    // the root node of the in-order predessor.  
