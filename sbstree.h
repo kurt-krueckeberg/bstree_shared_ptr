@@ -80,18 +80,17 @@ template<typename T> class sbstree {
    
       std::ostream& ostr;
       int current_level;
-      int height;
+      int height_;
        
-
       std::ostream& (Node::*pmf)(std::ostream&) const noexcept;
 
       void display_level(std::ostream& ostr, int level) const noexcept
       {
-        ostr << "\n\n" << "current level = " <<  level << '\n'; 
+        ostr << "\n" << "current level = " <<  level << '\n'; 
          
         // Provide some basic spacing to tree appearance.
         /*
-        std::size_t num = height - level + 1;
+        std::size_t num = height_ - level + 1;
       
         std::string str( num, ' ');
       
@@ -101,9 +100,12 @@ template<typename T> class sbstree {
       
       public: 
       
-      NodeLevelOrderPrinter (int height_in,  std::ostream& (Node::*pmf_)(std::ostream&) const noexcept, std::ostream& ostr_in):  ostr{ostr_in}, current_level{0}, height{height_in}, pmf{pmf_} {}
+      NodeLevelOrderPrinter (const sbstree<T>& tree, std::ostream& (Node::*pmf_)(std::ostream&) const noexcept, std::ostream& ostr_in):  ostr{ostr_in}, current_level{0}, pmf{pmf_}
+      { 
+          height_ = tree.height(); 
+      }
 
-      NodeLevelOrderPrinter (const NodeLevelOrderPrinter& lhs): ostr{lhs.ostr}, current_level{lhs.current_level}, height{lhs.height}, pmf{lhs.pmf} {}
+      NodeLevelOrderPrinter (const NodeLevelOrderPrinter& lhs): ostr{lhs.ostr}, current_level{lhs.current_level}, height_{lhs.height_}, pmf{lhs.pmf} {}
       
       void operator ()(const Node *pnode, int level)
       { 
@@ -471,9 +473,7 @@ template<typename Functor> void sbstree<T>::post_order(Functor f, const std::sha
 
 template<typename T> inline void  sbstree<T>::printlevelOrder(std::ostream& ostr) const noexcept
 {
-  auto h = height();  
-  
-  NodeLevelOrderPrinter tree_printer(h, &Node::print, ostr);  
+  NodeLevelOrderPrinter tree_printer(*this, &Node::print, ostr);  
   
   breath_first(tree_printer);
   
@@ -482,7 +482,7 @@ template<typename T> inline void  sbstree<T>::printlevelOrder(std::ostream& ostr
 
 template<typename T> void sbstree<T>::debug_printlevelOrder(std::ostream& ostr) const noexcept
 {
-  NodeLevelOrderPrinter tree_printer(height(), &Node::debug_print, ostr);  
+  NodeLevelOrderPrinter tree_printer(*this, &Node::debug_print, ostr);  
   
   breath_first(tree_printer);
   
