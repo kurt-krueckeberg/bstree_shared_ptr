@@ -13,7 +13,7 @@ int main(int argc, char** argv)
   sbstree<Test> tree;
 
   for (const auto& i : lst) tree.insert(Test{i});
-        
+/*
   cout << "This is the input tree " << tree << " printed in debug level order:\n";
   
   tree.debug_printlevelOrder(cout);
@@ -37,6 +37,31 @@ int main(int argc, char** argv)
   }
 
   return 0;
+*/ 
+  cout << "This is the input tree " << tree << " printed in debug level order:\n";
+  
+  tree.debug_printlevelOrder(cout);
+
+  cout << "We now start the removal loop\n";
+  
+  for (const auto& key : lst) {
+      
+      cout << "Tree before removal of Test{" << key << "} " << tree; 
+               
+      tree.remove(Test{key});
+
+      cout << "Tree after removal of Test{" << key << "}. " << tree; 
+      cout << "\nLevel-order print after the removal of Test{" << key << "}\n";
+      
+      tree.printlevelOrder(cout);
+
+      cout << flush << "\nDebug print\n";
+
+      tree.debug_printlevelOrder(cout);
+  }
+
+  return 0;
+
 
 
     sbstree<Test> tree1 = { 5, 15, 7, 17, 3, 13, 4, 14,  2, 12,  6, 16, 9, 19}; 

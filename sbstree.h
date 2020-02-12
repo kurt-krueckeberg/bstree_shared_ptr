@@ -191,9 +191,9 @@ template<typename T> class sbstree {
         return pre_order(f, root);
     }
   
-    template<typename Functor> void breath_first(Functor f) const noexcept;
+    template<typename Functor> void levelOrderTravers(Functor f) const noexcept;
 
-    //void breath_first();
+    //void levelOrderTravers();
 
     size_t height();
 
@@ -475,7 +475,7 @@ template<typename T> inline void  sbstree<T>::printlevelOrder(std::ostream& ostr
 {
   NodeLevelOrderPrinter tree_printer(*this, &Node::print, ostr);  
   
-  breath_first(tree_printer);
+  levelOrderTravers(tree_printer);
   
   std::cout << std::endl;
 }
@@ -484,7 +484,7 @@ template<typename T> void sbstree<T>::debug_printlevelOrder(std::ostream& ostr) 
 {
   NodeLevelOrderPrinter tree_printer(*this, &Node::debug_print, ostr);  
   
-  breath_first(tree_printer);
+  levelOrderTravers(tree_printer);
   
   ostr << std::flush;
 }
@@ -500,7 +500,7 @@ template<typename T> std::size_t sbstree<T>::height(const std::shared_ptr<Node>&
   return 1 + std::max(lh, rh);
 }
 
-template<typename T> template<typename Functor> void sbstree<T>::breath_first(Functor f) const noexcept
+template<typename T> template<typename Functor> void sbstree<T>::levelOrderTravers(Functor f) const noexcept
 {
    std::queue< std::pair<const Node*, int> > queue; 
 
