@@ -219,9 +219,8 @@ template<class T> std::ostream& sbstree<T>::Node::debug_print(std::ostream& ostr
 {
    ostr << " {["; 
  
-   ostr << key;
- 
-   ostr << "]:parent=" << parent << ", this=" << this;
+   //--ostr << key << "]: this=" << this;
+   ostr << key << ']';
  
    ostr << ", left=";
    
