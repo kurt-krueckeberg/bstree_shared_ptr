@@ -382,31 +382,39 @@ bool sbstree<T>::remove(const T& x, std::shared_ptr<Node>& p)
    return false;
 }
  */
+
+/*
+ Input Parameters:
+ x - key/node to remove
+ p - current node
+*/
 template<typename T> bool sbstree<T>::remove(const T& x, std::shared_ptr<Node>& p) 
 {
-   // If p is not nullptr and... 
-   // ...if its key is less than current node and we still have nodes to search 
+   // If we are not done--that is, p is not the child of a leaf node (and so equals nullptr)--and p's key is
+   // less than current key, recurse the left child.
    if (p && x < p->key) 
       return remove(x, p->left);
 
-   // ...else if its key is greater than current node and we still have nodes to search  
+   // ...else if we are not done--p is not the child of a leaf node (and so equals nullptr)--and p's key is
+   // greater than current key, recurse the right child.
    else if (p && x > p->key)
       return remove(x, p->right);
 
-   // ...else we found the key
+   // ...else we found the key/node to remove.
    else if (p && p->key == x) { 
 
-       // 1. If p has only one child (that is not nullptr), then we can remove node p immediately by...
+       // 1. If p has only one child (that is not nullptr), then we can remove node p immediately...
+       // Question: Do you know that the right child is not nullptr, or does that not even matter?
 
-       if (!p->left) 
+       if (!p->left) // ...if there is no left child...
 
-           // ...remove p by replacing it with right child
+           // ...replace p with its right child
            p = p->right; 
 
-       // ...else if p doesn't have a right child, then...
+       // ...else if p has no right child (and it does have a left child) then...
        else if (!p->right) 
 
-            // ...remove p by replacing it with left child
+            // ...remove p by replacing it with its left child
             p = p->left; 
        
        // 2. Else if p has two non-nullptr children, swap x with its in-order predecessor
