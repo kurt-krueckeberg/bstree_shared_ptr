@@ -1,6 +1,9 @@
 shared_ptr Implementation of Binary Search Tree
 -----------------------------------------------
 
+Comments
+~~~~~~~~
+
 This code is based on the article at https://thesai.org/Downloads/Volume6No3/Paper_9-Implementation_of_Binary_Search_Trees_Via_Smart_Pointers.pdf
 In particular its remove() method. See this post for comments relevant to the remove() implementation: https://stackoverflow.com/questions/45651401/using-smart-pointers-for-c-binary-search-tree
 See also https://thispointer.com/learning-shared_ptr-part-1-usage-details/.
