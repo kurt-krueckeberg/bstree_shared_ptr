@@ -405,6 +405,7 @@ template<typename T> bool sbstree<T>::remove(const T& x, std::shared_ptr<Node>& 
 
        // 1. If p has only one child (that is not nullptr), then we can remove node p immediately...
        // Question: Do you know that the right child is not nullptr, or does that not even matter?
+       // Answer: Is the dleted node replace with in-order successor or predecessor?
 
        if (!p->left) // ...if there is no left child...
 
