@@ -384,9 +384,14 @@ bool sbstree<T>::remove(const T& x, std::shared_ptr<Node>& p)
  */
 
 /*
+ Recursive removal. The recursion occurs in first searching for the key x. Recursion can also occur after
+ a key in an internal node, i.e., a node that has two non-nullptr children, is removed by replacing it with its in-order.
+ In order to remove the duplicate in-order successor key, we invoke remove(successor_key, p->right). That is, we 
+ remove the in-order successor key from p's right subtree.
+ successor
  Input Parameters:
  x - key/node to remove
- p - current node
+ p - current node, initially the root of the tree.
 */
 template<typename T> bool sbstree<T>::remove(const T& x, std::shared_ptr<Node>& p) 
 {
@@ -400,37 +405,34 @@ template<typename T> bool sbstree<T>::remove(const T& x, std::shared_ptr<Node>& 
    else if (p && x > p->key)
       return remove(x, p->right);
 
-   // ...else we found the key/node to remove.
+   // ...else we found the key to remove.
    else if (p && p->key == x) { 
 
-       // 1. If p has only one child (that is not nullptr), then we can remove node p immediately...
-       // Question: Do you know that the right child is not nullptr, or does that not even matter?
-       // Answer: Is the dleted node replace with in-order successor or predecessor?
-
+       // 1. If p has no left child, we replace it with its right child.
        if (!p->left) // ...if there is no left child...
 
-           // ...replace p with its right child
+           // ...remove node p by replacing it with its right child
            p = p->right; 
 
-       // ...else if p has no right child (and it does have a left child) then...
+       // ...else if p has no right child, but it does have a left child, then...
        else if (!p->right) 
 
-            // ...remove p by replacing it with its left child
+            // ...remove node p by replacing it with its left child 
             p = p->left; 
        
-       // 2. Else if p has two non-nullptr children, swap x with its in-order predecessor
-
+       // 2. Else if p has two non-nullptr children, swap p with its in-order predecessor
        else { 
 
-         std::shared_ptr<Node> q = p->right; // Note: This line not possible with unique_ptr
+         std::shared_ptr<Node> q = p->right; // <--- This line not possible with unique_ptr
 
-         while (q->left != nullptr) // locate in-order successor leaf node.
-                q = q->left;
+         while (q->left != nullptr) // locate in-order successor in leaf node, with min value of p's
+                q = q->left;        // right subtree.
 
-          p->key = q->key; // Set in-order successor p's key and...
+          p->key = q->key; // Set in-order q's key in p's node effectively removing the key.
 
-          remove(q->key, p->right); // ...now delete the swapped key, x. Start searching for x at p->left,
-                                   // the root node of the in-order predessor.  
+          remove(q->key, p->right); // ...now delete q->key (which is also the value of p->key) from p's right subtree, recalling
+                                    // q was initially set to p->right, which is the root node of subtree that had the in-order
+                                    // successor key.  
        }
        return true;
    }
