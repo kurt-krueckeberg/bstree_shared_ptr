@@ -140,7 +140,7 @@ template<typename T> class bstree {
 
    ~bstree() = default;
 
-    bstree(const bstree& lhs)
+    bstree(const bstree& lhs) : size(lhs.size)
     {
        pre_order_copy(lhs.root, root);
     }
@@ -160,9 +160,10 @@ template<typename T> class bstree {
 
     bstree& operator=(const bstree& lhs)
     { 
-       if (this != &lhs) 
+       if (this != &lhs)  {
+          size = lhs.size;
           pre_order_copy(lhs.root, root);
-
+       } 
        return *this;
     }
 
@@ -263,45 +264,6 @@ template<class T> std::ostream& bstree<T>::Node::debug_print(std::ostream& ostr)
    return ostr;
 }
 
-/*
-template<typename T> bstree<T>::Node::Node(const typename bstree<T>::Node& lhs) noexcept : key{lhs.key}, left{nullptr}, right{nullptr}
-{
-   if (lhs.parent == nullptr) // If we are copying a root pointer, then set parent.
-       parent = nullptr;
-
-   // The make_shared<Node> calls below results in the entire tree rooted at lhs being copied.
-   if (lhs.left  != nullptr) { 
-
-       left = std::make_shared<Node>(*lhs.left);    
-       left->parent = this;
-   }
-   
-   if (lhs.right != nullptr) {
-
-       right = std::make_shared<Node>(*lhs.right); 
-       right->parent = this;
-   }
-}
-
-template<typename T> typename bstree<T>::Node& bstree<T>::Node::operator=(const typename bstree<T>::Node& x) noexcept
-{
-   if (&x == this) return *this;
-
-   key = x.key;
-
-   if (x.parent == nullptr) // If we are copying the root node, then set parent to nullptr.
-       parent = nullptr;
-
-   left = x.left;    
-   left->parent = this;
-   
-   right = x.right;      
-   right->parent = this;
-  
-   return *this;
-}
-*/
-
 template<typename T> bool bstree<T>::insert(const T& x) noexcept
 {
   if (!root) {
@@ -341,6 +303,7 @@ template<typename T> bool bstree<T>::insert(const T& x, std::shared_ptr<Node>& c
 }
 
 /*
+ remove
 
  Recursion is used to descend the tree searching for the key x to remove. Recursion is used again when an internal node holds the key.
  An internal node is a node that has two non-nullptr children. It is "removed" by replacing its keys with that of its in-order
@@ -514,5 +477,4 @@ template<typename T> template<typename Functor> void bstree<T>::levelOrderTraver
    }
 
 }
-
 #endif
