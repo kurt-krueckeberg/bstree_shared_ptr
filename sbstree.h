@@ -7,6 +7,9 @@
 #include <queue>
 #include <initializer_list>
 
+/* 
+ * See discussion at https://opendatastructures.org/ods-cpp/6_2_Unbalanced_Binary_Searc.html on unbalanced search trees
+ */
 template<typename T> class sbstree {
 
     struct Node{
@@ -309,6 +312,10 @@ template<typename T> bool sbstree<T>::insert(const T& x) noexcept
   }
 };
 
+/*
+TODO: Add comments for this method
+*/
+
 template<typename T> bool sbstree<T>::insert(const T& x, std::shared_ptr<Node>& current) noexcept
 {
   if (x < current->key) {
@@ -333,94 +340,48 @@ template<typename T> bool sbstree<T>::insert(const T& x, std::shared_ptr<Node>& 
 }
 
 /*
- * Returns true if found and removed, false if not found
 
-bool sbstree<T>::remove(const T& x, std::shared_ptr<Node>& p) 
-{
-   // If p is not nullptr and... 
-   // ...if its key is less than current node and we still have nodes to search 
-   if (p && x < p->key) 
-      return remove(x, p->left);
-
-   // ...else if its key is greater than current node and we still have nodes to search  
-   else if (p && x > p->key)
-      return remove(x, p->right);
-
-   // ...else we found the key
-   else if (p && p->key == x) { 
-
-       // 1. If p has only one child (that is not nullptr), then we can remove node p immediately by...
-
-       // ...If p doesn't have a left child, then...
-       if (!p->left) 
-
-           // ...remove p by replacing it with right child
-           p = p->right; 
-
-       // ...else If p doesn't have a right child, then...
-       else if (!p->right) 
-
-            // ...remove p by replacing it with left child
-            p = p->left; 
-       
-       // 2. Else if p has two children (ttat aren't nullptr). Swap the found key with its in-order predecessor
-
-       else { // p is an internal node with two children. 
-
-         std::shared_ptr<Node> q = p->left; // Note: This line not possible with unique_ptr
-
-         while (q->right != nullptr) // locate in-order predecessor
-                q = q->right;
-
-          p->key = q->key; // Swap its key with p's key and...
-
-          remove(q->key, p->left); // delete the swapped key, which is x. Start searching for x at p->left,
-                                   // the root of the in-order predessor.  
-       }
-       return true;
-   }
-   return false;
-}
- */
-
-/*
- Recursive removal. The recursion occurs in first searching for the key x. Recursion can also occur after
- a key in an internal node, i.e., a node that has two non-nullptr children, is removed by replacing it with its in-order.
- In order to remove the duplicate in-order successor key, we invoke remove(successor_key, p->right). That is, we 
- remove the in-order successor key from p's right subtree.
- successor
+ Recursion is used to descend the tree searching for the key x to remove. Recursion is used again when an internal node holds the key.
+ An internal node is a node that has two non-nullptr children. It is "removed" by replacing its keys with that of its in-order
+ successor. This leaves a duplicate key in the in-order successor, so to remove this duplicate key, we call remove, passing the successor key
+ and the root of the right subtree of the node (in which the key was found):
+ 
+    remove(successor_key, root_right_subtree)
+ 
  Input Parameters:
  x - key/node to remove
  p - current node, initially the root of the tree.
 */
 template<typename T> bool sbstree<T>::remove(const T& x, std::shared_ptr<Node>& p) 
 {
-   // If we are not done--that is, p is not the child of a leaf node (and so equals nullptr)--and p's key is
-   // less than current key, recurse the left child.
+   // If we are not done, if p is not nullptr (which would mean the child of a leaf node), and p's key is
+   // less than current key, recurse the left subtree looking for it.
    if (p && x < p->key) 
       return remove(x, p->left);
 
-   // ...else if we are not done--p is not the child of a leaf node (and so equals nullptr)--and p's key is
-   // greater than current key, recurse the right child.
+   // ...else if we are not done, again because p is not nullptr (which would mean the child of a leaf node), and p's key is
+   // greater than current key, recurse the right subtree looking for it.
    else if (p && x > p->key)
       return remove(x, p->right);
 
-   // ...else we found the key to remove.
+   // ...else if p is not null, we compare it to the key.
    else if (p && p->key == x) { 
 
        // 1. If p has no left child, we replace it with its right child.
-       if (!p->left) // ...if there is no left child...
+       if (!p->left) 
 
-           // ...remove node p by replacing it with its right child
+           // ...remove node p by replacing it with its right child (which may be nullptr), effectively splicing
+           // in the right subtree.
            p = p->right; 
 
-       // ...else if p has no right child, but it does have a left child, then...
+       // ...else if p has no right child and it does have a left child (since the first if-test failed)...
        else if (!p->right) 
 
-            // ...remove node p by replacing it with its left child 
+            // ...remove node p by replacing it with its left child (which may be nullptr), effectively splicing in the 
+            // left subtree.
             p = p->left; 
        
-       // 2. Else if p has two non-nullptr children, swap p with its in-order predecessor
+       // 2. Else if p is an internal node and has two non-nullptr children, so we swap p with its in-order predecessor
        else { 
 
          std::shared_ptr<Node> q = p->right; // <--- This line not possible with unique_ptr
