@@ -1,5 +1,4 @@
 TODO 
 ====
 
-The insert code hasn't really been test because printLevelOrder() doesn't add spaces when an item is a nullptr. 
-
+Add to ~/www/data_structs/notes/bst-implementation.rst
