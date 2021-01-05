@@ -160,13 +160,16 @@ template<typename T> class sbstree {
 
     sbstree& operator=(const sbstree& lhs)
     { 
-       if (this != &hs) 
+       if (this != &lhs) 
           pre_order_copy(lhs.root, root);
 
        return *this;
     }
 
-    sbstree& operator=(sbstree&& lhs);
+    sbstree& operator=(sbstree&& lhs)
+    {
+        move(std::move(lhs));
+    }
 
     void printlevelOrder(std::ostream& ostr) const noexcept;
 
