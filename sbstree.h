@@ -9,6 +9,7 @@
 
 /* 
  * See discussion at https://opendatastructures.org/ods-cpp/6_2_Unbalanced_Binary_Searc.html on unbalanced search trees
+ * See https://thesai.org/Downloads/Volume6No3/Paper_9-Implementation_of_Binary_Search_Trees_Via_Smart_Pointers.pdf 
  */
 template<typename T> class sbstree {
 
@@ -149,7 +150,7 @@ template<typename T> class sbstree {
        move(std::move(lhs));
     }
 
-    sbstree& operator=(const sbstree& lhs);
+    sbstree& operator=(const sbstree& lhs) = default;
 
     sbstree& operator=(sbstree&& lhs);
 
@@ -271,21 +272,14 @@ template<typename T> typename sbstree<T>::Node& sbstree<T>::Node::operator=(cons
 
    key = x.key;
 
-   if (x.parent == nullptr) // If we are copying the root node, then set parent.
+   if (x.parent == nullptr) // If we are copying the root node, then set parent to nullptr.
        parent = nullptr;
 
-   // The make_shared<Node> calls below creates a copy of the entire tree at x.root
-   if (x.left  != nullptr) { 
-
-       left = std::make_shared<Node>(*x.left);    
-       left->parent = this;
-   }
+   left = x.left;    
+   left->parent = this;
    
-   if (x.right != nullptr) {
-
-       right = std::make_shared<Node>(*x.right); 
-       right->parent = this;
-   }
+   right = x.right;      
+   right->parent = this;
   
    return *this;
 }
