@@ -4,6 +4,7 @@
 #include <utility>
 #include <iostream>
 #include <algorithm>
+#include <memory>
 #include <queue>
 #include <initializer_list>
 
@@ -26,23 +27,14 @@ template<typename T> class sbstree {
         {
         } 
 
-        Node(const Node& lhs) noexcept;
+        Node(const Node& lhs) noexcept = delete;
 
-        Node& operator=(const Node& lhs) noexcept;
+        Node& operator=(const Node& lhs) noexcept = delete;
          
-        Node(Node&& lhs) noexcept : key{lhs.key}, left{std::move(lhs.left)}, right{lhs.right}, parent{lhs.parent} 
-        { 
-        }
+         
+        Node(Node&& lhs) noexcept = delete;
 
-        Node& operator=(Node&& lhs) noexcept
-        { 
-           key = lhs.key;
-
-           left = std::move(lhs.left);
-           right = lhs.right;
-
-           parent = lhs.parent; 
-        } 
+        Node& operator=(Node&& lhs) noexcept = delete;
         
         friend std::ostream& operator<<(std::ostream& ostr, const Node& node) 
         {
@@ -60,7 +52,10 @@ template<typename T> class sbstree {
         }
 
         std::ostream& debug_print(std::ostream& ostr) const noexcept;
-    };
+   };
+ 
+   std::shared_ptr<Node> root; 
+   std::size_t size;
 
    bool remove(const T& x, std::shared_ptr<Node>& p); 
 
@@ -76,9 +71,6 @@ template<typename T> class sbstree {
    template<typename Functor> void in_order(Functor f, const std::shared_ptr<Node>& current) const noexcept; 
    template<typename Functor> void post_order(Functor f, const std::shared_ptr<Node>& current) const noexcept; 
    template<typename Functor> void pre_order(Functor f, const std::shared_ptr<Node>& current) const noexcept; 
- 
-   std::shared_ptr<Node> root; 
-   std::size_t size;
 
    class NodeLevelOrderPrinter {
    
@@ -128,6 +120,17 @@ template<typename T> class sbstree {
    };
  
    std::size_t height(const std::shared_ptr<Node>& node) const noexcept;
+
+   void pre_order_copy(const std::shared_ptr<Node>& src, std::shared_ptr<Node>& dest) noexcept
+   {
+      if (!src) return;
+   
+      dest = src;
+   
+      pre_order_copy(src->left, dest->left);
+      pre_order_copy(src->right, dest->right);
+   }
+   
  
   public:
 
@@ -137,7 +140,10 @@ template<typename T> class sbstree {
 
    ~sbstree() = default;
 
-    sbstree(const sbstree& lhs);
+    sbstree(const sbstree& lhs)
+    {
+       pre_order_copy(lhs.root, root);
+    }
 
     sbstree(const std::initializer_list<T>& list) noexcept : size{0}
     {
@@ -150,7 +156,15 @@ template<typename T> class sbstree {
        move(std::move(lhs));
     }
 
-    sbstree& operator=(const sbstree& lhs) = default;
+    //sbstree& operator=(const sbstree& lhs) = default; This may be correct, but for now...
+
+    sbstree& operator=(const sbstree& lhs)
+    { 
+       if (this != &hs) 
+          pre_order_copy(lhs.root, root);
+
+       return *this;
+    }
 
     sbstree& operator=(sbstree&& lhs);
 
@@ -246,7 +260,7 @@ template<class T> std::ostream& sbstree<T>::Node::debug_print(std::ostream& ostr
    return ostr;
 }
 
-
+/*
 template<typename T> sbstree<T>::Node::Node(const typename sbstree<T>::Node& lhs) noexcept : key{lhs.key}, left{nullptr}, right{nullptr}
 {
    if (lhs.parent == nullptr) // If we are copying a root pointer, then set parent.
@@ -283,13 +297,7 @@ template<typename T> typename sbstree<T>::Node& sbstree<T>::Node::operator=(cons
   
    return *this;
 }
-
-template<typename T> sbstree<T>::sbstree(const sbstree& lhs)
-{
-   // This will invoke Node(const Node&), passing *lhs.root, which will duplicate the entire tree rooted at lhs.root.
-   root = std::make_unique<Node>(*lhs.root); 
-   size = lhs.size;
-}
+*/
 
 template<typename T> bool sbstree<T>::insert(const T& x) noexcept
 {
@@ -306,10 +314,6 @@ template<typename T> bool sbstree<T>::insert(const T& x) noexcept
   }
 };
 
-/*
-TODO: Add comments for this method
-*/
-
 template<typename T> bool sbstree<T>::insert(const T& x, std::shared_ptr<Node>& current) noexcept
 {
   if (x < current->key) {
@@ -321,9 +325,9 @@ template<typename T> bool sbstree<T>::insert(const T& x, std::shared_ptr<Node>& 
    
   } else if (x > current->key) {
 
-        if (!current->right) { 
+        if (!current->right)  
             current->right = std::make_shared<Node>(x, current.get());
-        }
+        
         else
             insert(x, current->right);
 
