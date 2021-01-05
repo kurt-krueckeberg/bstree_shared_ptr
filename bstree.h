@@ -9,14 +9,16 @@
 #include <initializer_list>
 
 /* 
- * See discussion at https://opendatastructures.org/ods-cpp/6_2_Unbalanced_Binary_Searc.html on unbalanced search trees
- * See https://thesai.org/Downloads/Volume6No3/Paper_9-Implementation_of_Binary_Search_Trees_Via_Smart_Pointers.pdf 
+ * See Unbalanced search trees at https://opendatastructures.org/ods-cpp/6_2_Unbalanced_Binary_Searc.html  
+ * 
+ * See implmented with shared_ptr<Node>  https://thesai.org/Downloads/Volume6No3/Paper_9-Implementation_of_Binary_Search_Trees_Via_Smart_Pointers.pdf 
  */
 template<typename T> class bstree {
 
-    struct Node{
+    struct Node {
+
         T key;
-        Node *parent;
+        Node *parent; // For tree traversal only
 
         std::shared_ptr<Node> left; 
         std::shared_ptr<Node> right;
@@ -30,7 +32,6 @@ template<typename T> class bstree {
         Node(const Node& lhs) noexcept = delete;
 
         Node& operator=(const Node& lhs) noexcept = delete;
-         
          
         Node(Node&& lhs) noexcept = delete;
 
@@ -61,7 +62,7 @@ template<typename T> class bstree {
 
    bool insert(const T& x, std::shared_ptr<Node>& p) noexcept;
 
-   void move(bstree&& lhs) noexcept
+   void move_tree(bstree&& lhs) noexcept
    {
        root = std::move(lhs.root);
        size = lhs.size;
@@ -153,7 +154,7 @@ template<typename T> class bstree {
 
     bstree(bstree&& lhs)
     {
-       move(std::move(lhs));
+       move_tree(std::forward<bstree>(lhs));
     }
 
     //bstree& operator=(const bstree& lhs) = default; This may be correct, but for now...
@@ -169,7 +170,7 @@ template<typename T> class bstree {
 
     bstree& operator=(bstree&& lhs)
     {
-        move(std::move(lhs));
+        move_tree(std::forward<bstree>(lhs));
     }
 
     void printlevelOrder(std::ostream& ostr) const noexcept;
