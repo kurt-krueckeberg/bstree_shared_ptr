@@ -1,5 +1,5 @@
-#ifndef sbstree_h
-#define sbstree_h
+#ifndef bstree_h
+#define bstree_h
 #include <memory>
 #include <utility>
 #include <iostream>
@@ -12,7 +12,7 @@
  * See discussion at https://opendatastructures.org/ods-cpp/6_2_Unbalanced_Binary_Searc.html on unbalanced search trees
  * See https://thesai.org/Downloads/Volume6No3/Paper_9-Implementation_of_Binary_Search_Trees_Via_Smart_Pointers.pdf 
  */
-template<typename T> class sbstree {
+template<typename T> class bstree {
 
     struct Node{
         T key;
@@ -61,7 +61,7 @@ template<typename T> class sbstree {
 
    bool insert(const T& x, std::shared_ptr<Node>& p) noexcept;
 
-   void move(sbstree&& lhs) noexcept
+   void move(bstree&& lhs) noexcept
    {
        root = std::move(lhs.root);
        size = lhs.size;
@@ -96,7 +96,7 @@ template<typename T> class sbstree {
       
       public: 
       
-      NodeLevelOrderPrinter (const sbstree<T>& tree, std::ostream& (Node::*pmf_)(std::ostream&) const noexcept, std::ostream& ostr_in):  ostr{ostr_in}, current_level{0}, pmf{pmf_}
+      NodeLevelOrderPrinter (const bstree<T>& tree, std::ostream& (Node::*pmf_)(std::ostream&) const noexcept, std::ostream& ostr_in):  ostr{ostr_in}, current_level{0}, pmf{pmf_}
       { 
           height_ = tree.height(); 
       }
@@ -134,31 +134,31 @@ template<typename T> class sbstree {
  
   public:
 
-    sbstree() : root{nullptr}, size{0}
+    bstree() : root{nullptr}, size{0}
     {
     } 
 
-   ~sbstree() = default;
+   ~bstree() = default;
 
-    sbstree(const sbstree& lhs)
+    bstree(const bstree& lhs)
     {
        pre_order_copy(lhs.root, root);
     }
 
-    sbstree(const std::initializer_list<T>& list) noexcept : size{0}
+    bstree(const std::initializer_list<T>& list) noexcept : size{0}
     {
         for (const auto& x : list)
             insert(x);
     }
 
-    sbstree(sbstree&& lhs)
+    bstree(bstree&& lhs)
     {
        move(std::move(lhs));
     }
 
-    //sbstree& operator=(const sbstree& lhs) = default; This may be correct, but for now...
+    //bstree& operator=(const bstree& lhs) = default; This may be correct, but for now...
 
-    sbstree& operator=(const sbstree& lhs)
+    bstree& operator=(const bstree& lhs)
     { 
        if (this != &lhs) 
           pre_order_copy(lhs.root, root);
@@ -166,7 +166,7 @@ template<typename T> class sbstree {
        return *this;
     }
 
-    sbstree& operator=(sbstree&& lhs)
+    bstree& operator=(bstree&& lhs)
     {
         move(std::move(lhs));
     }
@@ -230,13 +230,13 @@ template<typename T> class sbstree {
         return ostr;
     }
     
-    friend std::ostream& operator<<(std::ostream& ostr, const sbstree& tree)
+    friend std::ostream& operator<<(std::ostream& ostr, const bstree& tree)
     {
         return tree.print(ostr);
     }
 };
 
-template<class T> std::ostream& sbstree<T>::Node::debug_print(std::ostream& ostr) const noexcept
+template<class T> std::ostream& bstree<T>::Node::debug_print(std::ostream& ostr) const noexcept
 {
    ostr << " {["; 
  
@@ -264,7 +264,7 @@ template<class T> std::ostream& sbstree<T>::Node::debug_print(std::ostream& ostr
 }
 
 /*
-template<typename T> sbstree<T>::Node::Node(const typename sbstree<T>::Node& lhs) noexcept : key{lhs.key}, left{nullptr}, right{nullptr}
+template<typename T> bstree<T>::Node::Node(const typename bstree<T>::Node& lhs) noexcept : key{lhs.key}, left{nullptr}, right{nullptr}
 {
    if (lhs.parent == nullptr) // If we are copying a root pointer, then set parent.
        parent = nullptr;
@@ -283,7 +283,7 @@ template<typename T> sbstree<T>::Node::Node(const typename sbstree<T>::Node& lhs
    }
 }
 
-template<typename T> typename sbstree<T>::Node& sbstree<T>::Node::operator=(const typename sbstree<T>::Node& x) noexcept
+template<typename T> typename bstree<T>::Node& bstree<T>::Node::operator=(const typename bstree<T>::Node& x) noexcept
 {
    if (&x == this) return *this;
 
@@ -302,7 +302,7 @@ template<typename T> typename sbstree<T>::Node& sbstree<T>::Node::operator=(cons
 }
 */
 
-template<typename T> bool sbstree<T>::insert(const T& x) noexcept
+template<typename T> bool bstree<T>::insert(const T& x) noexcept
 {
   if (!root) {
      root = std::make_shared<Node>(x);     
@@ -317,7 +317,7 @@ template<typename T> bool sbstree<T>::insert(const T& x) noexcept
   }
 };
 
-template<typename T> bool sbstree<T>::insert(const T& x, std::shared_ptr<Node>& current) noexcept
+template<typename T> bool bstree<T>::insert(const T& x, std::shared_ptr<Node>& current) noexcept
 {
   if (x < current->key) {
 
@@ -353,7 +353,7 @@ template<typename T> bool sbstree<T>::insert(const T& x, std::shared_ptr<Node>& 
  x - key/node to remove
  p - current node, initially the root of the tree.
 */
-template<typename T> bool sbstree<T>::remove(const T& x, std::shared_ptr<Node>& p) 
+template<typename T> bool bstree<T>::remove(const T& x, std::shared_ptr<Node>& p) 
 {
    // If we are not done, if p is not nullptr (which would mean the child of a leaf node), and p's key is
    // less than current key, recurse the left subtree looking for it.
@@ -403,7 +403,7 @@ template<typename T> bool sbstree<T>::remove(const T& x, std::shared_ptr<Node>& 
 }
 
 template<typename T>
-template<typename Functor> void sbstree<T>::in_order(Functor f, const std::shared_ptr<Node>& current) const noexcept 
+template<typename Functor> void bstree<T>::in_order(Functor f, const std::shared_ptr<Node>& current) const noexcept 
 {
    if (current == nullptr) {
 
@@ -418,7 +418,7 @@ template<typename Functor> void sbstree<T>::in_order(Functor f, const std::share
 }
 
 template<typename T>
-template<typename Functor> void sbstree<T>::pre_order(Functor f, const std::shared_ptr<Node>& current) const noexcept 
+template<typename Functor> void bstree<T>::pre_order(Functor f, const std::shared_ptr<Node>& current) const noexcept 
 {
    if (current == nullptr) {
 
@@ -431,7 +431,7 @@ template<typename Functor> void sbstree<T>::pre_order(Functor f, const std::shar
 }
 
 template<typename T>
-template<typename Functor> void sbstree<T>::post_order(Functor f, const std::shared_ptr<Node>& current) const noexcept 
+template<typename Functor> void bstree<T>::post_order(Functor f, const std::shared_ptr<Node>& current) const noexcept 
 {
    if (current == nullptr) {
 
@@ -444,7 +444,7 @@ template<typename Functor> void sbstree<T>::post_order(Functor f, const std::sha
    f(current->key); 
 }
 
-template<typename T> inline void  sbstree<T>::printlevelOrder(std::ostream& ostr) const noexcept
+template<typename T> inline void  bstree<T>::printlevelOrder(std::ostream& ostr) const noexcept
 {
   NodeLevelOrderPrinter tree_printer(*this, &Node::print, ostr);  
   
@@ -453,7 +453,7 @@ template<typename T> inline void  sbstree<T>::printlevelOrder(std::ostream& ostr
   std::cout << std::endl;
 }
 
-template<typename T> void sbstree<T>::debug_printlevelOrder(std::ostream& ostr) const noexcept
+template<typename T> void bstree<T>::debug_printlevelOrder(std::ostream& ostr) const noexcept
 {
   NodeLevelOrderPrinter tree_printer(*this, &Node::debug_print, ostr);  
   
@@ -462,7 +462,7 @@ template<typename T> void sbstree<T>::debug_printlevelOrder(std::ostream& ostr) 
   ostr << std::flush;
 }
 
-template<typename T> std::size_t sbstree<T>::height(const std::shared_ptr<Node>& current) const noexcept
+template<typename T> std::size_t bstree<T>::height(const std::shared_ptr<Node>& current) const noexcept
 {
   // From: algorithmsandme.com/level-order-traversal-of-binary-tree
   if (!current) return 0;
@@ -473,7 +473,7 @@ template<typename T> std::size_t sbstree<T>::height(const std::shared_ptr<Node>&
   return 1 + std::max(lh, rh);
 }
 
-template<typename T> template<typename Functor> void sbstree<T>::levelOrderTravers(Functor f) const noexcept
+template<typename T> template<typename Functor> void bstree<T>::levelOrderTravers(Functor f) const noexcept
 {
    std::queue< std::pair<const Node*, int> > queue; 
 

@@ -3,14 +3,14 @@
 #include <iostream>
 #include <initializer_list>
 #include "test.h"
-#include "sbstree.h"
+#include "bstree.h"
 using namespace std;
 
 
 int main(int argc, char** argv) 
 {
   std::initializer_list<int> lst = {50, 39, 15, 65, 69, 50, 25, 20, 70, 100, 40, 34, 37, 30, 10, 33, 36, 38, 85, 90, 60, 35, 80, 89};
-  sbstree<Test> tree;
+  bstree<Test> tree;
 
   for (const auto& i : lst) tree.insert(Test{i});
 /*
@@ -64,13 +64,13 @@ int main(int argc, char** argv)
 
 
 
-    sbstree<Test> tree1 = { 5, 15, 7, 17, 3, 13, 4, 14,  2, 12,  6, 16, 9, 19}; 
+    bstree<Test> tree1 = { 5, 15, 7, 17, 3, 13, 4, 14,  2, 12,  6, 16, 9, 19}; 
     
     cout << "tree1 = " << tree1 << '\n' << "Printing tree1 level order:\n";
     
     tree1.printlevelOrder(cout);
         
-    sbstree<Test> tree2 = { Test{15}, Test{25}, Test{17}, Test{27}, Test{13}, Test{23}, Test{14}, Test{24},  Test{12}, Test{41},  Test{16}, Test{6}, Test{19}, Test{20}}; 
+    bstree<Test> tree2 = { Test{15}, Test{25}, Test{17}, Test{27}, Test{13}, Test{23}, Test{14}, Test{24},  Test{12}, Test{41},  Test{16}, Test{6}, Test{19}, Test{20}}; 
     
     cout << "\ntree2 = " << tree2 << "\nPrinting tree2 level order:\n";
     
