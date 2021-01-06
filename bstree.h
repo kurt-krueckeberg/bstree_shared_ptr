@@ -282,7 +282,16 @@ template<typename T> bool bstree<T>::insert(const T& x) noexcept
      if (rc) ++size;
      return rc;
   }
-};
+}
+
+/*
+ insert
+ ------
+
+ insert is recursive. We know it is initially never nullptr. Thereafter nullptr is checked before
+ recursing. 
+
+*/
 
 template<typename T> bool bstree<T>::insert(const T& x, std::shared_ptr<Node>& current) noexcept
 {
@@ -308,16 +317,32 @@ template<typename T> bool bstree<T>::insert(const T& x, std::shared_ptr<Node>& c
 }
 
 /*
- remove
+remove
+------
 
- Recursion is used to descend the tree searching for the key x to remove. Recursion is used again when an internal node holds the key.
- An internal node is a node that has two non-nullptr children. It is "removed" by replacing its keys with that of its in-order
- successor. This leaves a duplicate key in the in-order successor, so to remove this duplicate key, we call remove, passing the successor key
- and the root of the right subtree of the node (in which the key was found):
+There are three cases to consider when removing a key and its node:
+
+1. The node is a leaf
+2. The has has only one child
+3. The node has two children
+
+Case #1 can be combined with case #2 (how is explained later). Case #2 has two subcases:
+
+* The node only has a left child
+* the node only has a right child
+
+Both cases can be handled by splicing in the sole child node in place of the node to be removed.
+We must alter parent of the spliced-in node, so it has the correct parent, namely, the parent of the node being removed.
+
+Recursion is used to descend the tree searching for the key x to remove. Recursion is used again when an internal node holds the key.
+An internal node is a node that has two non-nullptr children. It is "removed" by replacing its keys with that of its in-order
+successor. Since this leaves a duplicate key in the in-order successor, we remove this duplicate key, we calling remove with the
+successor key and the root of the right subtree of the node to be removed:
  
-    remove(successor_key, root_right_subtree)
+    remove(successor_key, right_subtree_root);
  
  Input Parameters:
+
  x - key/node to remove
  p - current node, initially the root of the tree.
 */
@@ -338,35 +363,34 @@ template<typename T> bool bstree<T>::remove(const T& x, std::shared_ptr<Node>& p
 
        auto y = p->parent;
     
-       // 1. If p has no left child, we replace it with its right child.
+       // 1. If p has no left child, we replace it with its right child (which may be nullptr, if p is a leaf node).
        if (!p->left) {
 
            // ...remove node p by replacing it with its right child (which may be nullptr), effectively splicing
-           // in the right subtree.
+           // in the right subtree, and reset its parent to be the parent of the just-deleted node.
            p = p->right; 
-           p->parent = y;
+           p->parent = y;  
 
        // ...else if p has no right child and it does have a left child (since the first if-test failed)...
        } else if (!p->right) { 
 
             // ...remove node p by replacing it with its left child (which may be nullptr), effectively splicing in the 
-            // left subtree.
+            // left subtree, and reset its parent to be the parent of the just-deleted node.
             p = p->left; 
-            p->parent = y;
+            p->parent = y;  // reset its parent to be the parent of the just-deleted node.
        
-       // 2. Else if p is an internal node and has two non-nullptr children, so we swap p with its in-order predecessor
+       // 2. Else p is an internal node with two non-nullptr children, and we replace its key with its in-order predecessor
        } else { 
 
-         std::shared_ptr<Node> q = p->right; // <--- This line not possible with unique_ptr
+         std::shared_ptr<Node> q = p->right; // <--- Note: This code is not possible with unique_ptr
 
-         while (q->left != nullptr) // locate in-order successor in leaf node, with min value of p's
-                q = q->left;        // right subtree.
+         while (q->left != nullptr) // The in-order successor is the min value of p's right subtree.
+                q = q->left;        
 
           p->key = q->key; // Set in-order q's key in p's node effectively removing the key.
 
-          remove(q->key, p->right); // ...now delete q->key (which is also the value of p->key) from p's right subtree, recalling
-                                    // q was initially set to p->right, which is the root node of subtree that had the in-order
-                                    // successor key.  
+          remove(q->key, p->right); // ...now delete duplicate key q->key from p's right subtree
+                                    
        }
        return true;
    }
