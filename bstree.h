@@ -17,7 +17,7 @@ template<typename T> class bstree {
 
     class Node; // Forward reference.
 
-    class NodeLevelOrderPrinter { // used by ::printlevelOrder()
+    class NodeLevelOrderPrinter { // used only by bstree<T>::printlevelOrder()
    
       std::ostream& ostr;
       int current_level;
@@ -241,6 +241,8 @@ template<typename T> class bstree {
     {
         return tree.print(ostr);
     }
+
+    using value_type = T;
 };
 
 template<class T> std::ostream& bstree<T>::Node::debug_print(std::ostream& ostr) const noexcept
