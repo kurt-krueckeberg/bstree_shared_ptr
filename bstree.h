@@ -288,21 +288,22 @@ template<typename T> bool bstree<T>::insert(const T& x) noexcept
  insert
  ------
 
- insert is recursive. We know it is initially never nullptr. Thereafter nullptr is checked before
- recursing. 
-
+ insert is recursive. We current is initially never nullptr because the caller ensures this. Thereafter nullptr is checked before
+ each recursive call. 
 */
 
 template<typename T> bool bstree<T>::insert(const T& x, std::shared_ptr<Node>& current) noexcept
 {
-  if (x < current->key) {
+  if (x == current->key) return false; 
+
+  else if (x < current->key) {
 
        if (!current->left) 
             current->left =  std::make_shared<Node>(x, current.get());
        else 
            insert(x, current->left);
    
-  } else if (x > current->key) {
+  } else { // x > current->key
 
         if (!current->right)  
             current->right = std::make_shared<Node>(x, current.get());
@@ -310,8 +311,7 @@ template<typename T> bool bstree<T>::insert(const T& x, std::shared_ptr<Node>& c
         else
             insert(x, current->right);
 
-  } else if (x == current->key) 
-         return false; 
+  } 
   
   return true;
 }
