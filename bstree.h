@@ -15,65 +15,9 @@
  */
 template<typename T> class bstree {
 
-    struct Node {
+    class Node; // Forward reference.
 
-        T key;
-        Node *parent; // For tree traversal only
-
-        std::shared_ptr<Node> left; 
-        std::shared_ptr<Node> right;
-
-        Node();
-
-        Node(const T& x, Node *parent_in = nullptr) noexcept : key{x}, parent{parent_in} 
-        {
-        } 
-
-        Node(const Node& lhs) noexcept = delete;
-
-        Node& operator=(const Node& lhs) noexcept = delete;
-         
-        Node(Node&& lhs) noexcept = delete;
-
-        Node& operator=(Node&& lhs) noexcept = delete;
-        
-        friend std::ostream& operator<<(std::ostream& ostr, const Node& node) 
-        {
-            return node.print(ostr);
-        }
-
-        std::ostream& print(std::ostream& ostr) const noexcept
-        {
-            return ostr << key << ", " << std::flush;
-        }
-        
-        bool isLeaf() const noexcept
-        {
-           return (!left && !right) ? true : false;
-        }
-
-        std::ostream& debug_print(std::ostream& ostr) const noexcept;
-   };
- 
-   std::shared_ptr<Node> root; 
-   std::size_t size;
-
-   bool remove(const T& x, std::shared_ptr<Node>& p); 
-
-   bool insert(const T& x, std::shared_ptr<Node>& p) noexcept;
-
-   void move_tree(bstree&& lhs) noexcept
-   {
-       root = std::move(lhs.root);
-       size = lhs.size;
-       lhs.size = 0;
-   }
-   
-   template<typename Functor> void in_order(Functor f, const std::shared_ptr<Node>& current) const noexcept; 
-   template<typename Functor> void post_order(Functor f, const std::shared_ptr<Node>& current) const noexcept; 
-   template<typename Functor> void pre_order(Functor f, const std::shared_ptr<Node>& current) const noexcept; 
-
-   class NodeLevelOrderPrinter {
+    class NodeLevelOrderPrinter { // used by ::printlevelOrder()
    
       std::ostream& ostr;
       int current_level;
@@ -113,19 +57,80 @@ template<typename T> class bstree {
          
               display_level(ostr, level);       
           }
-         
+                    
           (pnode->*pmf)(std::cout);
          
           std::cout << '\n' << std::flush;
       }
    };
+
+    struct Node {
+
+        T key;
+        Node *parent; // USed for tree traversal only
+
+        std::shared_ptr<Node> left; 
+        std::shared_ptr<Node> right;
+
+        Node();
+
+        Node(const T& x, Node *parent_in = nullptr) noexcept : key{x}, parent{parent_in} 
+        {
+        } 
+
+        Node(const Node& lhs) noexcept = delete;
+
+        Node& operator=(const Node& lhs) noexcept = delete;
+         
+        Node(Node&& lhs) noexcept = delete;
+
+        Node& operator=(Node&& lhs) noexcept = delete;
+        
+        friend std::ostream& operator<<(std::ostream& ostr, const Node& node) 
+        {
+            return node.print(ostr);
+        }
+
+        std::ostream& print(std::ostream& ostr) const noexcept
+        {
+            return ostr << key << ", " << std::flush;
+        }
+        
+        bool isLeaf() const noexcept
+        {
+           return (!left && !right) ? true : false;
+        }
+
+        std::ostream& debug_print(std::ostream& ostr) const noexcept;
+   };
+
+   // tree private members
+   std::shared_ptr<Node> root; 
+   std::size_t size;
+
+   bool remove(const T& x, std::shared_ptr<Node>& p); 
+
+   bool insert(const T& x, std::shared_ptr<Node>& p) noexcept;
+
+   void move_tree(bstree&& lhs) noexcept
+   {
+       root = std::move(lhs.root);
+       size = lhs.size;
+       lhs.size = 0;
+   }
+   
+   template<typename Functor> void in_order(Functor f, const std::shared_ptr<Node>& current) const noexcept; 
+
+   template<typename Functor> void post_order(Functor f, const std::shared_ptr<Node>& current) const noexcept; 
+
+   template<typename Functor> void pre_order(Functor f, const std::shared_ptr<Node>& current) const noexcept; 
  
    std::size_t height(const std::shared_ptr<Node>& node) const noexcept;
 
    void pre_order_copy(const std::shared_ptr<Node>& src, std::shared_ptr<Node>& dest) noexcept
    {
       if (!src) return;
-   
+         
       dest = src;
    
       pre_order_copy(src->left, dest->left);
@@ -194,9 +199,9 @@ template<typename T> class bstree {
     
     bool remove(const T& x)
     {
-      bool rc = remove(x, root); 
-      if (rc) --size;
-      return rc; 
+       bool rc = remove(x, root); 
+       if (rc) --size;
+       return rc; 
     }
 
     template<typename Functor> void in_order(Functor f) const noexcept
@@ -240,13 +245,12 @@ template<typename T> class bstree {
 
 template<class T> std::ostream& bstree<T>::Node::debug_print(std::ostream& ostr) const noexcept
 {
-   ostr << " {["; 
+   ostr << " { key = "; 
  
-   //--ostr << key << "]: this=" << this;
-   ostr << key << ']';
+   ostr << key << ' ';
 
    if (parent) 
-      ostr << ", parent->key =" << parent->key; 
+      ostr << ", parent->key = " << parent->key; 
    else
       ostr << ", parent = nullptr";
  
@@ -332,22 +336,26 @@ template<typename T> bool bstree<T>::remove(const T& x, std::shared_ptr<Node>& p
    // ...else if p is not null, we compare it to the key.
    else if (p && p->key == x) { 
 
+       auto y = p->parent;
+    
        // 1. If p has no left child, we replace it with its right child.
-       if (!p->left) 
+       if (!p->left) {
 
            // ...remove node p by replacing it with its right child (which may be nullptr), effectively splicing
            // in the right subtree.
            p = p->right; 
+           p->parent = y;
 
        // ...else if p has no right child and it does have a left child (since the first if-test failed)...
-       else if (!p->right) 
+       } else if (!p->right) { 
 
             // ...remove node p by replacing it with its left child (which may be nullptr), effectively splicing in the 
             // left subtree.
             p = p->left; 
+            p->parent = y;
        
        // 2. Else if p is an internal node and has two non-nullptr children, so we swap p with its in-order predecessor
-       else { 
+       } else { 
 
          std::shared_ptr<Node> q = p->right; // <--- This line not possible with unique_ptr
 
