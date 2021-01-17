@@ -333,13 +333,13 @@ Case #1 can be combined with case #2 (how is explained later). Case #2 has two s
 * The node only has a left child
 * the node only has a right child
 
-Both cases can be handled by splicing in the sole child node in place of the node to be removed.
-We must alter parent of the spliced-in node, so it has the correct parent, namely, the parent of the node being removed.
+Both cases can be handled by splicing in the sole child node in place of the node to be removed. The first subcase also
+handles leaf nodes. Afterwared we reset its parent to the parent of the node being removed.
 
 Recursion is used to descend the tree searching for the key x to remove. Recursion is used again when an internal node holds the key.
 An internal node is a node that has two non-nullptr children. It is "removed" by replacing its keys with that of its in-order
-successor. Since this leaves a duplicate key in the in-order successor, we remove this duplicate key, we calling remove with the
-successor key and the root of the right subtree of the node to be removed:
+successor. This leaves a duplicate key in the in-order successor, which we remove we calling remove() with the successor key and the
+root of the right subtree of the node to be removed:
  
     remove(successor_key, right_subtree_root);
  
@@ -365,12 +365,12 @@ template<typename T> bool bstree<T>::remove(const T& x, std::shared_ptr<Node>& p
 
        auto y = p->parent;
     
-       // 1. If p has no left child, we replace it with its right child (which may be nullptr, if p is a leaf node).
+       // 1. If p has no left child (and, if it is a leaf, it may also have no right child), we replace it with its right child (which may be nullptr, if p is a leaf node).
        if (!p->left) {
 
            // ...remove node p by replacing it with its right child (which may be nullptr), effectively splicing
            // in the right subtree, and reset its parent to be the parent of the just-deleted node.
-           p = p->right; 
+           p = p->right; // Note: If p->right is nullptr, the assignment deletes p's memory. 
            p->parent = y;  
 
        // ...else if p has no right child and it does have a left child (since the first if-test failed)...
