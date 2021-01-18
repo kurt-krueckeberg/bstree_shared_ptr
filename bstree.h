@@ -162,8 +162,6 @@ template<typename T> class bstree {
        move_tree(std::forward<bstree>(lhs));
     }
 
-    //bstree& operator=(const bstree& lhs) = default; This may be correct, but for now...
-
     bstree& operator=(const bstree& lhs)
     { 
        if (this != &lhs)  {
@@ -219,7 +217,7 @@ template<typename T> class bstree {
         return pre_order(f, root);
     }
   
-    template<typename Functor> void levelOrderTravers(Functor f) const noexcept;
+    template<typename Functor> void levelOrderTraverse(Functor f) const noexcept;
 
     //void levelOrderTravers();
 
@@ -471,7 +469,7 @@ template<typename T> std::size_t bstree<T>::height(const std::shared_ptr<Node>& 
   return 1 + std::max(lh, rh);
 }
 
-template<typename T> template<typename Functor> void bstree<T>::levelOrderTravers(Functor f) const noexcept
+template<typename T> template<typename Functor> void bstree<T>::levelOrderTraverse(Functor f) const noexcept
 {
    std::queue< std::pair<const Node*, int> > queue; 
 
@@ -485,18 +483,7 @@ template<typename T> template<typename Functor> void bstree<T>::levelOrderTraver
    // 2. pair.second is: current level of tree.
    queue.push(std::make_pair(proot, initial_level));
 
-   /*
-    * TODO: I think this code assumes a balanced tree.
-    * We may need to use the tree height instead of isLeaf()
-    */ 
-   
    while (!queue.empty()) {
-
-       /*
-        std::pair<const Node *, int> pair_ = queue.front();
-        const Node *current = pair_.first;
-        int current_level = pair_.second;
-       */
 
         auto[current, current_level] = queue.front(); 
 
