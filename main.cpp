@@ -10,7 +10,10 @@ using namespace std;
 int main(int argc, char** argv) 
 {
   std::initializer_list<int> lst = {50, 39, 15, 65, 69, 50, 25, 20, 70, 100, 40, 34, 37, 30, 10, 33, 36, 38, 85, 90, 60, 35, 80, 89};
-  bstree<Test> tree;
+  
+  bstree<Test> treex;
+  
+  bstree<Test> tree(move(treex));
 
   for (const auto& i : lst) tree.insert(Test{i});
 /*
@@ -77,10 +80,12 @@ int main(int argc, char** argv)
     tree2 = tree1; 
     tree2.printlevelOrder(cout);
     
-   cout << "\nAfter 'tree2 = tree1', tree2 = " << tree2 << "\nPrinting tree2 level order:\n" << flush;
-   tree2.printlevelOrder(cout);
+    cout << "\nAfter 'tree2 = tree1', tree2 = " << tree2 << "\nPrinting tree2 level order:\n" << flush;
+    
+    tree2.printlevelOrder(cout);
    
    vector<int> vec = {-5, -15, -7, -17, -3, -13, -4, -14,  -2, -12,  -6, -16, -9, -19}; 
+   
    for (const auto& ref : vec) {
 
      tree2.remove(ref); 

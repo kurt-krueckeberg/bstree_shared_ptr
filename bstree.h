@@ -160,6 +160,7 @@ template<typename T> class bstree {
     bstree(bstree&& lhs)
     {
        move_tree(std::forward<bstree>(lhs));
+       
     }
 
     bstree& operator=(const bstree& lhs)
@@ -444,7 +445,7 @@ template<typename T> inline void  bstree<T>::printlevelOrder(std::ostream& ostr)
 {
   NodeLevelOrderPrinter tree_printer(*this, &Node::print, ostr);  
   
-  levelOrderTravers(tree_printer);
+  levelOrderTraverse(tree_printer);
   
   std::cout << std::endl;
 }
@@ -453,7 +454,7 @@ template<typename T> void bstree<T>::debug_printlevelOrder(std::ostream& ostr) c
 {
   NodeLevelOrderPrinter tree_printer(*this, &Node::debug_print, ostr);  
   
-  levelOrderTravers(tree_printer);
+  levelOrderTraverse(tree_printer);
   
   ostr << std::flush;
 }
